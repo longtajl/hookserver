@@ -2,12 +2,20 @@ require 'sinatra'
 require 'json'
 require 'pry'
 
-get '/' do
-  " I got some JSON: "
-end
+class App < Sinatra::Base
+  configure :development do
+    register Sinatra::Reloader
+  end
 
-post '/payload' do
-  push = JSON.parse(request.body.read)
-  puts "I got some JSON: #{push.inspect}"
+  # routingの設定
+  get '/' do
+    " I got some JSON: "
+  end
+
+  post '/payload' do
+    push = JSON.parse(request.body.read)
+    puts "I got some JSON: #{push.inspect}"
+  end
+
 end
 
