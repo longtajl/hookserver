@@ -12,11 +12,19 @@ set :pty, true
 set :default_env, { path: "/usr/local/rbenv/shims:/usr/local/rbenv/bin:$PATH" }
 set :keep_releases, 5
 
-after 'deploy:publishing', 'deploy:restart'
+#after 'deploy:publishing', 'deploy:restart'
 namespace :deploy do
 
-  desc 'Restart application'
   task :restart do
-    invoke 'unicorn:restart'
+    run "if [ -f #{unicorn_pid} ]; then kill -USR2 `cat #{unicorn_pid}`; else cd #{current_path} && bundle exec unicorn -c #{unicorn_conf} -E #{rack_env} -D; fi"
   end
+
+  task :start do
+    run "cd #{current_path} && bundle exec unicorn -c #{unicorn_conf} -E #{rack_env} -D"
+  end
+
+  task :stop do
+    run "if [ -f #{unicorn_pid} ]; then kill -QUIT `cat #{unicorn_pid}`; fi"
+  end
+
 end
